@@ -36,7 +36,7 @@ Report (Жалоба) – фиксирует случаи жалоб на пол
 ### Код с учетом принципов KISS, YAGNI, DRY, и SOLID.
 
 #### Сервер (Flask + SQLite + AI-модель)
-
+```
 from flask import Flask, request, jsonify
 import sqlite3
 import joblib
@@ -112,7 +112,7 @@ def logs():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
+```
 #### Клиент (Python + requests + PyQt GUI)
 ```
 import sys
@@ -181,16 +181,16 @@ if __name__ == '__main__':
     client.show()
     sys.exit(app.exec_())
 ```
-* **KISS (Keep It Simple, Stupid)
+* KISS (Keep It Simple, Stupid)
 Простая структура с минимальными зависимостями (Flask, SQLite, PyQt, requests).
 Простая модель AI (TF-IDF + логистическая регрессия).
-* **YAGNI (You Ain't Gonna Need It)
+* YAGNI (You Ain't Gonna Need It)
 Нет сложных ML-алгоритмов или ненужных API-запросов.
 Нет избыточных данных в БД.
-* **DRY (Don't Repeat Yourself)
+* DRY (Don't Repeat Yourself)
 detect_bot(), preprocess_text() отделены от API-обработчиков.
 Код БД оформлен в отдельные функции.
-* **SOLID
+* SOLID
 S: у каждого класса и функции одно назначение.
 O:легко добавить новую модель бота.
 L: можно заменить detect_bot() на другую модель.
