@@ -32,7 +32,55 @@ Report (Жалоба) – фиксирует случаи жалоб на пол
 Один пост может содержать множество комментариев (Post → Comment).
 Один пользователь может иметь запись о бот-активности (User → BotActivity).
 Один пользователь может быть объектом множества жалоб (User → Report).
+```
+@startuml
+class User {
+  +id: UUID
+  +username: String
+  +email: String
+  +createdAt: Date
+  +updatedAt: Date
+}
 
+class Post {
+  +id: UUID
+  +userId: UUID
+  +content: Text
+  +createdAt: Date
+  +likes: Integer
+  +shares: Integer
+
+}
+
+class Comment {
+  +id: UUID
+  +postId: UUID
+  +content: Text
+  +createdAt: Date
+}
+
+class BotActivity {
+  +id: UUID
+  +userId: UUID
+  +activityScore: Float
+  +suspiciousFlags: String
+  +lastChecked: Date
+}
+
+class Report {
+  +id: UUID
+  +userId: UUID
+  +reason: String
+  +status: String
+  +createdAt: Date
+}
+
+User "1" -- "0..*" Post : creates
+Post "1" -- "0..*" Comment : contains
+User "1" -- "0..1" BotActivity : has
+User "1" -- "0..*" Report : reported
+@enduml
+```
 ### Код с учетом принципов KISS, YAGNI, DRY, и SOLID.
 
 #### Сервер (Flask + SQLite + AI-модель)
