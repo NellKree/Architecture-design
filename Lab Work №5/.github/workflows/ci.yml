@@ -43,7 +43,7 @@ jobs:
     - name: Build and start services
       run: |
         docker-compose up -d
-        sleep 10  
+        sleep 10  # Даем время сервисам запуститься
 
     - name: Run integration tests
       run: |
