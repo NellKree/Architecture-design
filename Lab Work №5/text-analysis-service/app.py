@@ -2,10 +2,9 @@ from flask import Flask, request, jsonify
 app = Flask(__name__)
 
 def detect_bot_activity(text):
-    bot_keywords = ["buy now", "free", "click here", "subscribe", "limited offer", "win big", "act now"]
+    bot_keywords = ["buy now", "free", "click here", "subscribe"]
     score = sum(1 for word in bot_keywords if word in text.lower()) / len(bot_keywords)
     return score
-
 
 @app.route("/analyze", methods=["POST"])
 def analyze_text():
