@@ -274,12 +274,10 @@ print(api.fetch_user_data("12345"))  # Ограничение
 from typing import List
 
 class Observer:
-    """Интерфейс наблюдателя"""
     def update(self, event: str):
         pass
 
 class BotDetector:
-    """Обнаруживает подозрительную активность и оповещает подписчиков"""
     def __init__(self):
         self._observers: List[Observer] = []
 
@@ -294,30 +292,24 @@ class BotDetector:
             observer.update(event)
 
     def detect_bot_activity(self, message: str):
-        """Простая проверка: если в сообщении есть 'bot', считаем подозрительным"""
         if "bot" in message.lower():
-            print("🚨 Bot activity detected!")
+            print("Bot activity detected!")
             self.notify(f"Suspicious message: {message}")
 
 class Logger(Observer):
-    """Логирует события"""
     def update(self, event: str):
         print(f"[Logger] {event}")
 
 class AlertSystem(Observer):
-    """Оповещает о критических событиях"""
     def update(self, event: str):
         print(f"[ALERT] Sending alert: {event}")
 
-# 🛠 Подключаем наблюдателей
 detector = BotDetector()
 logger = Logger()
 alert_system = AlertSystem()
 
 detector.attach(logger)
 detector.attach(alert_system)
-
-# 🔥 Тестируем
 detector.detect_bot_activity("Hello, I am a friendly bot!")
 
 ```
