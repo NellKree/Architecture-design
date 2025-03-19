@@ -271,40 +271,55 @@ print(api.fetch_user_data("12345"))  # Ограничение
 ![Observer  ](U8.png)
 * Код:
 ```
+from typing import List
+
 class Observer:
     """Интерфейс наблюдателя"""
-    def update(self, event):
+    def update(self, event: str):
         pass
 
-class UserActivityObserver(Observer):
-    """Наблюдатель за активностью пользователя"""
-    def update(self, event):
-        print(f"Received event: {event}")
-
-class BotAnalyzer:
-    """Анализатор ботов с системой наблюдателей"""
+class BotDetector:
+    """Обнаруживает подозрительную активность и оповещает подписчиков"""
     def __init__(self):
-        self.observers = []
+        self._observers: List[Observer] = []
 
-    def attach(self, observer):
-        self.observers.append(observer)
+    def attach(self, observer: Observer):
+        self._observers.append(observer)
 
-    def detach(self, observer):
-        self.observers.remove(observer)
+    def detach(self, observer: Observer):
+        self._observers.remove(observer)
 
-    def notify(self, event):
-        for observer in self.observers:
+    def notify(self, event: str):
+        for observer in self._observers:
             observer.update(event)
 
-# Использование
-analyzer = BotAnalyzer()
-observer1 = UserActivityObserver()
-observer2 = UserActivityObserver()
+    def detect_bot_activity(self, message: str):
+        """Простая проверка: если в сообщении есть 'bot', считаем подозрительным"""
+        if "bot" in message.lower():
+            print("🚨 Bot activity detected!")
+            self.notify(f"Suspicious message: {message}")
 
-analyzer.attach(observer1)
-analyzer.attach(observer2)
+class Logger(Observer):
+    """Логирует события"""
+    def update(self, event: str):
+        print(f"[Logger] {event}")
 
-analyzer.notify("Suspicious activity detected")
+class AlertSystem(Observer):
+    """Оповещает о критических событиях"""
+    def update(self, event: str):
+        print(f"[ALERT] Sending alert: {event}")
+
+# 🛠 Подключаем наблюдателей
+detector = BotDetector()
+logger = Logger()
+alert_system = AlertSystem()
+
+detector.attach(logger)
+detector.attach(alert_system)
+
+# 🔥 Тестируем
+detector.detect_bot_activity("Hello, I am a friendly bot!")
+
 ```
   ### 2. Strategy  
 * Общее назначение: Позволяет динамически изменять алгоритм, не меняя сам объект.
