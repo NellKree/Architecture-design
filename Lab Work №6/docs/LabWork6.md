@@ -1,8 +1,8 @@
 # Шаблоны проектирования GoF
 ## Порождающие шаблоны
 ### 1. Factory Method
-* Общее назначение: Позволяет создавать объекты без указания их конкретного класса, а через общий интерфейс.
-* В проекте: Будем использовать для создания разных анализаторов ботов (например, для Twitter, Telegram, VK).
+* Общее назначение: Позволяет делегировать создание объектов подклассам, упрощая добавление новых типов без изменения основного кода.
+* В проекте: Мы можем создать фабрику, которая будет порождать разные анализаторы ботов — например, анализ по ключевым словам, анализ по активности пользователя, анализ с помощью ML-модели.
 * UML-диаграмма:
   
 ![Factory Method](U1.png)
@@ -10,43 +10,43 @@
 ```
 from abc import ABC, abstractmethod
 
-# 1. Базовый интерфейс анализатора
 class BotAnalyzer(ABC):
     @abstractmethod
-    def analyze(self, user_id: str):
+    def analyze(self, message: str):
         pass
 
-# 2. Конкретные классы анализаторов
-class TwitterBotAnalyzer(BotAnalyzer):
-    def analyze(self, user_id: str):
-        return f"Analyzing Twitter user {user_id} for bot activity"
+class KeywordAnalyzer(BotAnalyzer):
+    def analyze(self, message: str):
+        if "bot" in message.lower():
+            return "Bot detected via keywords!"
+        return " Message is safe."
 
-class FacebookBotAnalyzer(BotAnalyzer):
-    def analyze(self, user_id: str):
-        return f"Analyzing Facebook user {user_id} for bot activity"
+class MLAnalyzer(BotAnalyzer):
+    def analyze(self, message: str):
+        print("Running ML model on:", message)
+        return "Bot detected via ML!" if len(message) % 2 == 0 else " Message is safe."
 
-class TelegramBotAnalyzer(BotAnalyzer):
-    def analyze(self, user_id: str):
-        return f"Analyzing Telegram user {user_id} for bot activity"
+class BotAnalyzerFactory(ABC):
+    @abstractmethod
+    def create_analyzer(self) -> BotAnalyzer:
+        pass
 
-# 3. Фабричный метод
-class BotAnalyzerFactory:
-    @staticmethod
-    def get_analyzer(platform: str) -> BotAnalyzer:
-        analyzers = {
-            "twitter": TwitterBotAnalyzer(),
-            "facebook": FacebookBotAnalyzer(),
-            "telegram": TelegramBotAnalyzer()
-        }
-        return analyzers.get(platform.lower(), None)
+class KeywordAnalyzerFactory(BotAnalyzerFactory):
+    def create_analyzer(self) -> BotAnalyzer:
+        return KeywordAnalyzer()
 
-# 4. Использование
-if __name__ == "__main__":
-    platform = "twitter"
-    analyzer = BotAnalyzerFactory.get_analyzer(platform)
-    if analyzer:
-        print(analyzer.analyze("user123"))
+class MLAnalyzerFactory(BotAnalyzerFactory):
+    def create_analyzer(self) -> BotAnalyzer:
+        return MLAnalyzer()
 
+keyword_factory = KeywordAnalyzerFactory()
+ml_factory = MLAnalyzerFactory()
+
+analyzer1 = keyword_factory.create_analyzer()
+analyzer2 = ml_factory.create_analyzer()
+
+print(analyzer1.analyze("Hello, I am a bot!"))  
+print(analyzer2.analyze("This is a normal message"))
 
 ```
   ### 2. Singleton 
