@@ -531,3 +531,165 @@
 
 #### Формат ответа:
 Нет содержимого.
+
+## Реализация API
+
+[Код Python](https://github.com/NellKree/Architecture-design/blob/main/Lab%20Work%20%E2%84%964/main.py)
+
+## *Тестирование API*
+
+### *Работа с пользователем*
+
+#### *POST /users*
+
+![image](s1.png)
+
+![image](s2.png)
+
+![image](s3.png)
+
+![image](s4.png)
+
+![image](s5.png)
+
+![image](s6.png)
+
+#### *GET /users/{user_id} *
+
+![image](s7.png)
+
+![image](s8.png)
+
+![image](s9.png)
+
+![image](s10.png)
+
+![image](s11.png)
+
+![image](s12.png)
+
+#### *PUT /users/{user_id} *
+
+![image](s13.png)
+
+![image](s14.png)
+
+![image](s15.png)
+
+![image](s16.png)
+
+![image](s17.png)
+
+![image](s18.png)
+### *Работа с reports *
+
+#### *POST /reports *
+
+![image](s19.png)
+
+![image](s20.png)
+
+![image](s21.png)
+
+![image](s22.png)
+
+![image](s23.png)
+
+![image](s24.png)
+
+#### *GET /reports *
+
+![image](s25.png)
+
+![image](s26.png)
+
+![image](s27.png)
+
+
+### *Работа с posts*
+
+#### *POST /posts*
+
+![image](s28.png)
+
+![image](s29.png)
+
+![image](s30.png)
+
+![image](s31.png)
+
+![image](s32.png)
+
+![image](s33.png)
+#### *GET /posts/{id} *
+
+![image](s34.png)
+
+![image](s35.png)
+
+![image](s36.png)
+
+![image](s37.png)
+
+![image](s38.png)
+
+![image](s39.png)
+
+#### *GET /users/{id}/posts/ *
+
+![image](s40.png)
+
+![image](s41.png)
+
+![image](s42.png)
+
+![image](s43.png)
+
+![image](s44.png)
+
+![image](s45.png)
+
+#### *DELETE /posts/{id} *
+
+![image](s46.png)
+
+![image](s47.png)
+
+![image](s48.png)
+
+![image](s49.png)
+
+![image](s50.png)
+
+![image](s51.png)
+
+### *Работа с comments *
+
+#### *POST /comments *
+
+![image](s52.png)
+
+![image](s53.png)
+
+![image](s54.png)
+
+![image](s55.png)
+
+![image](s56.png)
+
+![image](s57.png)
+
+
+#### *DELETE /comments/{id} *
+
+![image](s58.png)
+
+![image](s59.png)
+
+![image](s60.png)
+
+![image](s61.png)
+
+![image](s62.png)
+
+![image](s63.png)
