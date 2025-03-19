@@ -503,10 +503,223 @@ print("\nТест 3: Обычное сообщение")
 spam_filter.handle("Hey, how are you?")
 ```
 
-
 # Шаблоны проектирования GRASP
 ## Роли (обязанности) классов
 
-## Принципы разработки
+### 1. Information Expert 
+* Проблема: Как определить, какой класс должен обрабатывать или предоставлять данные?
+* Решение: Назначаем ответственность классу, который обладает необходимой информацией для выполнения задачи.
+* Код:
+```
+class Comment:
+    def __init__(self, user_id: int, text: str, timestamp: str):
+        self.user_id = user_id
+        self.text = text
+        self.timestamp = timestamp
 
+    def is_suspicious(self) -> bool:
+        return "bot" in self.text.lower() or len(self.text) < 5
+
+# Использование
+comment = Comment(123, "I'm a bot!", "2025-03-19 10:00:00")
+print(comment.is_suspicious()) 
+
+```
+* Результаты:
+  Логика проверки находится в классе, который владеет информацией (Comment).
+  Снижается связанность, так как логика не разносится по другим классам.
+* Связь с другими паттернами: Используется в Factory Method, когда фабрика создаёт объекты с нужными атрибутами.
+### 2. Creator
+* Проблема: Как определить, какой класс должен создавать объект?
+* Решение: Класс, который использует или владеет объектом, должен его создавать.
+* Код:
+```
+class User:
+    def __init__(self, user_id: int, username: str):
+        self.user_id = user_id
+        self.username = username
+
+class UserFactory:
+    def create_user(self, user_id: int, username: str) -> User:
+        return User(user_id, username)
+
+# Использование фабрики
+factory = UserFactory()
+user = factory.create_user(101, "JohnDoe")
+print(user.username) 
+
+```
+* Результаты:
+  Управление созданием объектов в одном месте.
+  Облегчает расширение (например, можно подменить UserFactory).
+* Связь с другими паттернами:Используется в Factory Method и Abstract Factory.
+### 3. Controller
+* Проблема: Как организовать обработку команд в приложении, не смешивая бизнес-логику и UI?
+* Решение: Создаём контроллер, который принимает команды от внешнего мира и делегирует их бизнес-логике.
+* Код:
+```
+class BotController:
+    def __init__(self, analyzer):
+        self.analyzer = analyzer
+
+    def process_message(self, message: str):
+        return self.analyzer.analyze(message)
+
+# Использование
+analyzer = KeywordAnalyzer() 
+controller = BotController(analyzer)
+print(controller.process_message("Hello, I am a bot!")) 
+
+```
+* Результаты: в бизнес-логике нет многопоточности
+* Связь с другими паттернами: Observer
+  ### 4. Pure Fabrication
+* Проблема: необходимо обеспечивать Low Coupling и High Cohesion
+* Решение: Создаём отдельный служебный класс, который выполняет эту задачу.
+* Код:
+```
+class Logger:
+    @staticmethod
+    def log(message: str):
+        print(f"[LOG]: {message}")
+
+# Использование
+Logger.log("Bot detected in message!") 
+
+```
+* Результаты:
+  Отдельный класс выполняет вспомогательные задачи.
+  Код основного приложения остаётся чистым.
+* Связь с другими паттернами:Singleton 
+  ### 5.  Indirection 
+* Проблема: Как снизить связанность между модулями системы?
+* Решение: Добавляем посредник, который перенаправляет вызовы.
+* Код:
+```
+class APIClient:
+    def fetch_user_data(self, user_id):
+        print(f"Fetching data for user {user_id} from API...")
+        return {"user_id": user_id, "status": "active"}
+
+class UserService:
+    def __init__(self, api_client: APIClient):
+        self.api_client = api_client
+
+    def get_user_status(self, user_id):
+        data = self.api_client.fetch_user_data(user_id)
+        return data["status"]
+
+# Использование
+api_client = APIClient()
+service = UserService(api_client)
+print(service.get_user_status(42)) 
+
+```
+* Результаты:Снижает зависимость между классами.
+* Связь с другими паттернами:Используется в Adapter и Proxy.
+
+## Принципы разработки
+### 1. Polymorphism
+* Проблема: необходимо обрабатывать различные варианты поведения на основании типа, допуская замену частей системы
+* Решение: распределить обязанности между классами с использованием полиморфных операций, оставив каждой внешней системе свой интерфейс
+* Код:
+```
+from abc import ABC, abstractmethod
+
+class Analyzer(ABC):
+    @abstractmethod
+    def analyze(self, message: str):
+        pass
+
+class MLAnalyzer(Analyzer):
+    def analyze(self, message: str):
+        return "Bot detected via ML!"
+
+class KeywordAnalyzer(Analyzer):
+    def analyze(self, message: str):
+        return "Safe message."
+
+def run_analysis(analyzer: Analyzer, message: str):
+    print(analyzer.analyze(message))
+
+run_analysis(MLAnalyzer(), "Suspicious text")  
+run_analysis(KeywordAnalyzer(), "Hello")  
+```
+* Результаты: Код работает с абстракцией, а не с конкретными реализациями.
+* Связь с другими паттернами:Используется в Strategy и Factory Method.
+### 2. Low Coupling 
+* Проблема: Как минимизировать зависимость между классами, чтобы изменения в одном не ломали весь код?
+* Решение: Каждый класс должен зависеть только от необходимых ему данных, избегая лишних зависимостей.
+* Код:
+```
+class APIClient:
+    def fetch_user_data(self, user_id):
+        print(f"Fetching data for user {user_id} from API...")
+        return {"user_id": user_id, "status": "active"}
+
+class UserService:
+    def __init__(self, api_client: APIClient):
+        self.api_client = api_client  # Используем слабую связанность
+
+    def get_user_status(self, user_id):
+        data = self.api_client.fetch_user_data(user_id)
+        return data["status"]
+
+api_client = APIClient()
+service = UserService(api_client)
+print(service.get_user_status(42))  
+```
+* Результаты:Если нужно заменить API-клиент, можно сделать это без изменения UserService. Код проще тестировать и расширять.
+* Связь с другими паттернами:Используется в Adapter и Proxy.
+### 3. High Cohesion 
+* Проблема: Как избежать того, чтобы один класс выполнял слишком много обязанностей?
+* Решение: Разделяем обязанности между разными классами, чтобы каждый был сфокусирован на одной задаче.
+* Код:
+```
+class Comment:
+    def __init__(self, user_id: int, text: str):
+        self.user_id = user_id
+        self.text = text
+
+    def is_suspicious(self) -> bool:
+        return "bot" in self.text.lower() or len(self.text) < 5
+
+class CommentAnalyzer:
+    def analyze(self, comment: Comment):
+        return "Suspicious" if comment.is_suspicious() else "Normal"
+
+comment = Comment(123, "I'm a bot!")
+analyzer = CommentAnalyzer()
+print(analyzer.analyze(comment))  
+
+```
+* Результаты: Comment отвечает только за хранение данных. CommentAnalyzer отвечает за анализ, а не за хранение данных. Разделение обязанностей делает код чище и удобнее в расширении.
+* Связь с другими паттернами:Часто встречается в Single Responsibility Principle (SRP) и MVC.
 ## Свойство программы (цель)
+### 1.  Protected Variations
+* Проблема:  необходимо спроектировать систему так, чтобы изменение одних её элементов не влияло на другие
+* Решение: идентифицировать точки возможных изменений или неустойчивости и распределить обязанности так, чтобы обеспечить устойчивую работу системы
+* Код:
+```
+class DataSource(ABC):
+    @abstractmethod
+    def get_data(self):
+        pass
+
+class APIDataSource(DataSource):
+    def get_data(self):
+        return "Data from API"
+
+class DatabaseDataSource(DataSource):
+    def get_data(self):
+        return "Data from Database"
+
+def process_data(source: DataSource):
+    print(source.get_data())
+
+process_data(APIDataSource()) 
+process_data(DatabaseDataSource())  
+
+```
+* Результаты:Изменения в API не ломают логику работы системы.
+* Связь с другими паттернами:Open Closed Principleв SOLID, Singleton
